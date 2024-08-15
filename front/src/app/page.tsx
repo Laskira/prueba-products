@@ -1,44 +1,37 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Payment from "./payment";
+import axios from "axios";
 
 export default function Home() {
-  const products = [
-    {
-      id: 1,
-      description: "Product 1 Description",
-      price: 100,
-      stock: 10,
-      image: "prueba.com",
-    },
-    {
-      id: 2,
-      description: "Product 2 Description",
-      price: 150,
-      stock: 5,
-      image: "prueba.com",
-    },
-    {
-      id: 3,
-      description: "Product 3 Description",
-      price: 200,
-      stock: 2,
-      image: "prueba.com",
-    },
-  ];
-
+  const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<{ [key: number]: number }>({});
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/products");
+        setProducts(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addToCart = (productId: number) => {
     setCart((prevCart) => ({
       ...prevCart,
       [productId]: (prevCart[productId] || 0) + 1,
     }));
-    console.log(cart)
   };
 
   const removeFromCart = (productId: number) => {
@@ -69,6 +62,10 @@ export default function Home() {
     setSelectedProduct(null);
     setShowPaymentModal(false);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main className="flex flex-col h-screen bg-slate-50">
@@ -129,7 +126,6 @@ export default function Home() {
                 className="px-5 py-2 font-medium rounded text-sm focus:ring-4 bg-green-600 text-white hover:bg-green-500 ml-2 disabled:bg-green-300"
                 onClick={() => handleBuyNow(product)}
                 disabled={!cart[product.id] || cart[product.id] === 0}
-
               >
                 Buy Now
               </button>
