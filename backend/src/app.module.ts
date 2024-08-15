@@ -4,25 +4,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { DataSource } from 'typeorm';
+import { Users } from './users/entities/users.entity';
+import { Products } from './products/entities/products.entity';
+import { Status } from './transactions/entities/status.entity';
+import { Transactions } from './transactions/entities/transactions.entity';
+import { DocumentType } from './users/entities/document-type.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: async () => ({
         type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get<string>('DATABASE_USER'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get<string>('DATABASE_NAME'),
-        entities: ['dist/**/*.entity{.ts,.js'],
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: 'password',
+        database: 'payments',
+        entities: [Users, Products, Status, Transactions, DocumentType],
         synchronize: false,
         retryDelay: 3000,
-        retryAttempts: 10
+        retryAttempts: 10,
       }),
       inject: [ConfigService],
     }),
@@ -33,4 +36,6 @@ import { TransactionsModule } from './transactions/transactions.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

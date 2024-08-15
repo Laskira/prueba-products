@@ -37,7 +37,7 @@ export class TransactionsService {
       throw new Error(`Status with ID ${statusId} not found`);
     }
   
-    transaccion.statusId = status;  // Asignas la instancia de Status
+    transaccion.statusId = status; 
     return this.transactionsRepository.save(transaccion);
   }
   
