@@ -31,17 +31,6 @@ CREATE DATABASE payments
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
 
-CREATE TABLE DocumentType (
-id SERIAL PRIMARY KEY,
-description varchar(50) NOT NULL
-);
-
-CREATE TABLE Users (
-    id varchar(15) PRIMARY KEY,
-    name varchar(300) NOT NULL,
-    adress varchar(200) NOT NULL,
-    documentType int REFERENCES DocumentType(id) NOT NULL
-);
 
 CREATE TABLE Products (
     id SERIAL PRIMARY KEY,
@@ -58,8 +47,7 @@ description varchar(50) NOT NULL
 
 CREATE TABLE Transactions (
     id SERIAL PRIMARY KEY,
-    statusId int REFERENCES Status(id) NOT NULL,
-    userId varchar(15) REFERENCES Users(id) NOT NULL
+    statusId int REFERENCES Status(id) NOT NULL
 );
 
 -- Datos de prueba
@@ -72,12 +60,6 @@ INSERT INTO Status (description) VALUES
 ('Cancelled'),
 ('Refunded'),
 ('Disputed');
-
-INSERT INTO DocumentType (description) VALUES
-('CC'),
-('Pasport'),
-('CE'),
-('DNI');
 
 INSERT INTO Products (description, stock, price, image) VALUES
 ('Arroz Blanco 1kg', 100, 5000, ''),
@@ -95,3 +77,4 @@ INSERT INTO Products (description, stock, price, image) VALUES
 ('Papel Higiénico 4 Rollos', 100, 8000, ''),
 ('Jabón de Baño 125g', 150, 3000, ''),
 ('Pasta de Dientes 75ml', 80, 6000, '');
+
