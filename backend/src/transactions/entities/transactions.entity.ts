@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Users } from '../../users/entities/users.entity';
 import { Status } from './status.entity'; 
 
 @Entity()
@@ -10,6 +9,4 @@ export class Transactions {
   @ManyToOne(() => Status)
   statusId: Status;
 
-  @ManyToOne(() => Users)
-  userId: Users;
 }

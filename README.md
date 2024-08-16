@@ -53,13 +53,9 @@ CREATE TABLE Transactions (
 -- Datos de prueba
 
 INSERT INTO Status (description) VALUES
-('Pending'),
-('Processing'),
-('Completed'),
-('Failed'),
-('Cancelled'),
-('Refunded'),
-('Disputed');
+('success'),
+('failed'),
+('pending');
 
 INSERT INTO Products (description, stock, price, image) VALUES
 ('Arroz Blanco 1kg', 100, 5000, ''),

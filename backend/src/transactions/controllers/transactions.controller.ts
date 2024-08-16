@@ -22,4 +22,9 @@ export class TransactionsController {
   ) {
     return this.transactionsService.updateTransaccionStatus(id, statusId);
   }
+
+  @Post('process-payment')
+  async processPayment(@Body() paymentData: any) {
+    return this.transactionsService.processPayment(paymentData);
+  }
 }

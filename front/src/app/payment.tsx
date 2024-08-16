@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import axios from "axios";
 import Image from "next/image";
+
 export default function Payment({
   product,
   totalPrice,
   onClose,
 }: {
-  totalPrice: number
+  totalPrice: number;
   product: any;
   onClose: () => void;
 }) {
@@ -14,9 +16,10 @@ export default function Payment({
   const [expiryDate, setExpiryDate] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [cardType, setCardType] = useState<"VISA" | "MasterCard" | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const baseFee = 5000;
-  const deliveryFee = 15000; 
+  const deliveryFee = 15000;
 
   const finalTotalPrice = totalPrice + baseFee + deliveryFee;
 
@@ -36,15 +39,31 @@ export default function Payment({
     setCreditCard(cleanedNumber);
   };
 
-  const handlePayment = () => {
-    console.log("Credit Card:", creditCard);
-    console.log("CVC:", cvc);
-    console.log("Expiry Date:", expiryDate);
-    console.log("Delivery Address:", deliveryAddress);
-    console.log("Card Type:", cardType);
+  const handlePayment = async () => {
+    setLoading(true);
 
-    // Aquí añadirías la lógica para realizar el pago con la API de Wompi
-    onClose();
+    const paymentData = {
+      creditCard,
+      cvc,
+      expiryDate,
+      deliveryAddress,
+      totalAmount: finalTotalPrice,
+      productId: product.id,  
+    };
+
+    try {
+      const response = await axios.post('http://localhost:4000/pay', paymentData);
+
+      console.log("Payment Response:", response.data);
+      alert("Payment successful!");
+
+      onClose();
+    } catch (error) {
+      console.error('Error during payment:', error);
+      alert("Payment failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -97,14 +116,14 @@ export default function Payment({
         </div>
 
         <div className="mt-4">
-          <label className="block mb-2">Expiry Date:</label>
+          <label className="block mb-2">Expiry Date (MMYY):</label>
           <input
-            type="number"
-            placeholder="MM/YY"
+            type="text"
+            placeholder="MMYY"
             className="border border-gray-300 rounded p-2 w-full"
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
-            maxLength={5}
+            maxLength={4}
           />
         </div>
 
@@ -122,15 +141,9 @@ export default function Payment({
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded mr-2"
             onClick={handlePayment}
-            disabled={
-              !creditCard ||
-              !cvc ||
-              !expiryDate ||
-              !deliveryAddress ||
-              !cardType
-            }
+            disabled={loading || !creditCard || !cvc || !expiryDate || !deliveryAddress || !cardType}
           >
-            Pay
+            {loading ? "Processing..." : "Pay"}
           </button>
           <button
             className="bg-gray-300 text-gray-700 px-4 py-2 rounded"

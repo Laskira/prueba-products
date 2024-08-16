@@ -13,13 +13,14 @@ export class TransactionsService {
     private statusRepository: Repository<Status>,
   ) {}
 
-  findTransaccion(id: FindOneOptions<Transactions>) {
+  async findTransaccion(id: FindOneOptions<Transactions>) {
     return this.transactionsRepository.findOne(id);
   }
 
-  createTransaccion(body: any) {
+  async createTransaccion(body: any) {
     const newTransaccion = this.transactionsRepository.create(body);
-    return this.transactionsRepository.save(newTransaccion);
+    const savedTransaction = await this.transactionsRepository.save(newTransaccion);
+    return savedTransaction;
   }
 
   async updateTransaccionStatus(id: number, statusId: number) {
@@ -40,5 +41,18 @@ export class TransactionsService {
     transaccion.statusId = status; 
     return this.transactionsRepository.save(transaccion);
   }
-  
+
+  async processPayment(paymentData: any) {
+    const statusId = 1; 
+    const transactionData = {
+      statusId,
+      userId: paymentData.userId,
+      // otros datos relevantes
+    };
+    
+    const savedTransaction = await this.createTransaccion(transactionData);
+
+    await this.updateTransaccionStatus(savedTransaction[0].id, statusId); 
+    return savedTransaction;
+  }
 }
